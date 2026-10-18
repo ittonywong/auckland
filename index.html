@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>奧克蘭公共交通實時到站（任何 AT 路線）</title>
+<meta name="description" content="Real-time arrivals for any Auckland Transport bus, train or ferry route — live delays, favourites and 6 languages. 奧克蘭巴士、火車、渡輪實時到站。">
+<meta name="theme-color" content="#00548f">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://ittonywong.github.io/auckland/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="ittonywong.github.io">
+<meta property="og:title" content="Auckland Real-time Arrivals · 奧克蘭公共交通實時到站">
+<meta property="og:description" content="Live arrivals for any AT bus, train or ferry route, with favourites and 6 languages.">
+<meta property="og:url" content="https://ittonywong.github.io/auckland/"><meta property="og:image" content="https://ittonywong.github.io/auckland/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--brand:#00548f;--brand-2:#0a6cb3;--brand-dk:#003d68;--bg:#f3f6fa;--card:#fff;--text:#1b2733;--muted:#5a6675;--line:#e3e8ef;--rt-bg:#e2f5e8;--rt:#14532d;--sch-bg:#eef1f5;--sch:#4b5563;--warn:#8a4b00;--err:#b42318;--radius:12px;--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08)}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang TC","Microsoft JhengHei","Hiragino Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;margin:0;background:var(--bg);color:var(--text);line-height:1.45;font-size:16px}
+a{color:var(--brand-2)}a:hover{color:var(--brand-dk)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{background:linear-gradient(135deg,var(--brand-dk),var(--brand) 55%,var(--brand-2));color:#fff;padding:18px 0 14px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:1.35rem;margin:0;font-weight:700;letter-spacing:.2px}.sub{margin:4px 0 0;font-size:.85rem;color:#d7e7f6}
+#lang{font-size:.9rem;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.95);color:var(--brand-dk);min-height:36px}
+.tabs{display:inline-flex;gap:4px;margin-top:14px;background:rgba(0,0,0,.18);padding:4px;border-radius:10px}
+.tabs button{border:0;background:none;color:#e6f0fa;font-size:.95rem;padding:8px 16px;border-radius:8px;cursor:pointer;min-height:38px}
+.tabs button.on{background:#fff;color:var(--brand-dk);font-weight:700;box-shadow:var(--shadow)}
+main.wrap{padding-top:18px;padding-bottom:8px}
+.status{font-size:.82rem;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:6px;min-height:20px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:0 0 12px;box-shadow:var(--shadow)}
+.panel-title{font-weight:700;margin:0 0 8px;font-size:1rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select,input,button{font:inherit;font-size:.95rem;max-width:100%}
+input,select{padding:9px 11px;border:1px solid #cdd5df;border-radius:9px;background:#fff;color:var(--text);min-height:42px}
+input:focus,select:focus,button:focus-visible{outline:3px solid rgba(10,108,179,.35);outline-offset:1px;border-color:var(--brand-2)}
+#rt,#fr{flex:1 1 220px;font-weight:600;letter-spacing:.3px}#q{flex:1 1 180px}#dir,#sel{flex:1 1 220px}
+button{cursor:pointer;border-radius:9px;min-height:42px;padding:9px 16px;border:1px solid #cdd5df;background:#fff;color:var(--text)}
+button:hover{background:#f5f8fb}
+#rgo,#fgo,#fadd{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}#rgo:hover,#fgo:hover,#fadd:hover{background:var(--brand-dk)}
+.controls{margin-bottom:12px}
+#rmsg,#fmsg{margin-top:8px;font-size:.9rem;color:var(--muted);min-height:1.2em}
+.rname{font-weight:700;color:var(--brand)}
+.pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center;font-size:.88rem;color:var(--muted)}
+.pick button{min-height:34px;padding:5px 11px;background:#e8f1f9;border:1px solid #b7d1e8;color:var(--brand-dk);font-size:.88rem;border-radius:999px}
+#list,#favs{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);min-width:0}
+.card.meta{grid-column:1/-1;text-align:center;color:var(--muted);padding:28px 16px;font-size:.95rem;border-style:dashed;box-shadow:none;background:#fafbfd}
+.card.err{grid-column:1/-1}
+.stop{font-weight:700;margin-right:6px;overflow-wrap:anywhere}.code{color:#8a94a3;font-size:.8rem;font-weight:500}
+.card>.meta{font-size:.82rem;color:var(--muted);margin:2px 0 4px}
+.eta{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:6px 0 0;padding:6px 10px;border-radius:8px;font-size:.95rem;font-weight:600}
+.eta small{font-weight:500;font-size:.78rem;opacity:.9}
+.card .eta{clear:both}
+.rt{background:var(--rt-bg);color:var(--rt)}.sch{background:var(--sch-bg);color:var(--sch)}
+.card .meta{color:var(--muted)}.err{color:var(--err)}
+.hide{display:none!important}
+.addf,.del{float:right;min-height:32px;padding:4px 10px;font-size:.82rem;border-radius:8px;margin:0 0 6px 8px}
+.addf{background:#fff8e1;border:1px solid #ecd68f;color:#6b4e00}.addf:hover{background:#fff0c2}
+.del{background:#fff;border:1px solid #f1c4c0;color:var(--err)}.del:hover{background:#fdeceb}
+.loading::before{content:"";display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid #b7c6d6;border-top-color:var(--brand-2);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.loading::before{animation:none}}
+.legend{font-size:.82rem;color:var(--muted);margin:14px 0 0}
+.banner{background:#fff4e5;border:1px solid #f5c27a;color:var(--warn);padding:10px 14px;border-radius:10px;margin:0 0 12px;font-size:.9rem}
+footer{margin-top:28px;border-top:1px solid var(--line);background:#fff;padding:18px 0 26px;font-size:.82rem;color:var(--muted)}
+footer p{margin:0 0 6px}footer .made{margin-top:10px;color:#8a94a3}
+@media (max-width:600px){h1{font-size:1.15rem}.tabs{display:flex;width:100%}.tabs button{flex:1;padding:8px 6px}.panel{padding:12px}#list,#favs{grid-template-columns:1fr}button{padding:9px 12px}}
+</style></head><body>
+<header><div class="wrap"><div class="hd"><div><h1 data-tr="h1">🚌 奧克蘭公共交通實時到站</h1><p class="sub" data-tr="src">資料來源：Auckland Transport 開放數據 API</p></div><select id="lang" aria-label="Language"></select></div>
+<nav class="tabs" role="tablist"><button id="t1" class="on" role="tab" data-tr="tab1">路線查詢</button><button id="t2" role="tab" data-tr="tab2">我的收藏</button></nav></div></header>
+<main class="wrap">
+<div id="cfg" class="banner hide" role="alert"></div>
+<div class="status loading" id="upd" data-tr="loading" aria-live="polite">載入中…</div>
+<div id="p1">
+ <section class="panel"><div class="bar"><input id="rt" placeholder="輸入任何 AT 路線，例如 NX1、70、OUT、E-W" data-ip="rtPh" size="22" autocomplete="off"><button id="rgo" data-tr="go">查詢</button></div>
+  <div id="rmsg" aria-live="polite"></div><div id="rpick" class="pick"></div></section>
+ <div class="bar controls"><select id="dir" aria-label="Direction"></select><input id="q" placeholder="搜尋站名 / 站號" data-ip="qPh" type="search"><select id="sel" aria-label="Stop"></select><button id="rf" data-tr="refresh">🔄 更新</button></div>
+ <div id="list"></div>
+</div>
+<div id="p2" class="hide">
+ <section class="panel"><h2 class="panel-title" data-tr="newFav">新增收藏</h2><div class="bar">
+  <input id="fr" placeholder="路線，例如 NX1、70、INN" data-ip="frPh" size="10"><button id="fgo" data-tr="go">查詢</button>
+  <select id="fd" class="hide"></select><select id="fs" class="hide"></select><button id="fadd" class="hide" data-tr="save">⭐ 儲存</button></div>
+  <div id="fmsg" aria-live="polite"></div><div id="fpick" class="pick"></div></section>
+ <div id="favs"></div>
+</div>
+<p class="legend" data-tr="legend">🟢 實時 = 按巴士實時位置／延誤推算；⚪ 時間表 = 未有實時資料，按時間表時間。每 30 秒自動更新。</p>
+</main>
+<footer><div class="wrap"><p data-trh="footSrc"></p><p data-tr="footDisc"></p><p data-tr="footSec"></p><p class="made" data-tr="footMade"></p></div></footer>
+<script>
+// ================== CONFIG: EDIT THIS ONE LINE after you deploy the Worker ==================
+const PROXY_URL = "https://auckland-at-proxy.ytonywong.workers.dev/";
+// ===========================================================================================
+const API=PROXY_URL.replace(/\/*$/,"/"),CONFIGURED=!/YOUR-SUBDOMAIN|<|>/.test(PROXY_URL);
+const $=id=>document.getElementById(id);
+// ---- i18n（6 種語言；AT 站名保持原文）----
+const LANGS=[["zh-Hant","繁體中文"],["zh-Hans","简体中文"],["en","English"],["ja","日本語"],["mi","Te Reo Māori"],["ko","한국어"]];
+const I18N={
+"zh-Hant":{footSrc:"資料來源：<a href=\"https://at.govt.nz/about-us/at-data-sources/\" target=\"_blank\" rel=\"noopener\">Auckland Transport</a> 開放數據（GTFS 時間表及實時資料），按 <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> 授權使用。",footDisc:"本網站並非 Auckland Transport 官方服務，與 AT 無關。到站時間僅供參考，可能有延誤或誤差，出行前請以 AT 官方資訊為準。",footSec:"AT API 金鑰只保存喺伺服器端代理（Cloudflare Worker），唔會出現喺呢個網頁。",footMade:"作品集項目 · ittonywong.github.io",errRate:"請求太頻繁，請等 30 秒再試",errNet:"網絡連線失敗，請檢查網絡",errConfig:"網站未設定：請喺 index.html 修改 PROXY_URL（Worker 網址）",title:"奧克蘭公共交通實時到站（任何 AT 路線）",h1:"🚌 奧克蘭公共交通實時到站",src:"資料來源：Auckland Transport 開放數據 API",lang:"語言",tab1:"路線查詢",tab2:"我的收藏",loading:"載入中…",
+ rtPh:"輸入任何 AT 路線，例如 NX1、70、OUT、E-W",go:"查詢",qPh:"搜尋站名 / 站號",allStops:"全部車站",refresh:"🔄 更新",newFav:"新增收藏",frPh:"路線，例如 NX1、70、INN",save:"⭐ 儲存",
+ legend:"🟢 實時 = 按巴士實時位置／延誤推算；⚪ 時間表 = 未有實時資料，按時間表時間。每 30 秒自動更新。",
+ wait:" 已有車待發",late:" 遲{n}分",early:" 早{n}分",ontime:" 準時",arriving:"即將到站",mins:"{m} 分鐘",rtLbl:" 實時",sep:"，時間表 ",schLbl:" 時間表",
+ train:"🚆 火車",bus:"🚌 巴士",ferry:"⛴️ 渡輪",school:"🚌 校巴",loadingRoute:"載入路線 {r} 資料中…",routeInfo:"共 {n} 個方向",noTrips:"路線 {r} 暫時冇任何班次資料",loadFail:"載入失敗：{e}",
+ enterRoute:"請輸入路線號碼，例如 NX1、70、OUT、E-W",querying:"查詢中…",notFound:"搵唔到路線「{q}」，請檢查路線號碼",didYouMean:"　你係咪想搵：",examples:"（例子：NX1、70、OUT、INN、E-W 火車）",sameName:"同名路線：",
+ toDir:"往 {d}",noMatchStop:"搵唔到相符車站",calculating:"計算到站時間中…",etaFail:"到站資料載入失敗：{e}",addFav:"☆ 收藏",faved:"⭐ 已收藏",noSvc:"暫無班次",dup:"已經收藏咗",saved:"已儲存 ⭐ {r} · {s}",
+ enterRouteShort:"請輸入路線",noTripsShort:"呢條路線暫時冇班次資料",queryFail:"查詢失敗：{e}",pickDirStop:"路線 {r}：請揀方向同車站",noFavs:"未有收藏。喺上面輸入路線新增，或者喺「路線查詢」撳 ☆ 收藏。",del:"🗑 刪除",none3h:"未來 3 小時暫無班次",
+ updated:"最後更新（紐西蘭時間）：{a}　｜　數據時間：{b}",updFail:"更新失敗：{e}（稍後自動重試）"},
+"zh-Hans":{footSrc:"数据来源：<a href=\"https://at.govt.nz/about-us/at-data-sources/\" target=\"_blank\" rel=\"noopener\">Auckland Transport</a> 开放数据（GTFS 时刻表及实时数据），依据 <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> 许可使用。",footDisc:"本网站并非 Auckland Transport 官方服务，与 AT 无关。到站时间仅供参考，可能存在延误或误差，出行前请以 AT 官方信息为准。",footSec:"AT API 密钥只保存在服务器端代理（Cloudflare Worker）中，不会出现在本网页。",footMade:"作品集项目 · ittonywong.github.io",errRate:"请求过于频繁，请 30 秒后再试",errNet:"网络连接失败，请检查网络",errConfig:"网站未配置：请在 index.html 修改 PROXY_URL（Worker 网址）",title:"奥克兰公共交通实时到站（任何 AT 路线）",h1:"🚌 奥克兰公共交通实时到站",src:"数据来源：Auckland Transport 开放数据 API",lang:"语言",tab1:"路线查询",tab2:"我的收藏",loading:"加载中…",
+ rtPh:"输入任何 AT 路线，例如 NX1、70、OUT、E-W",go:"查询",qPh:"搜索站名 / 站号",allStops:"全部车站",refresh:"🔄 刷新",newFav:"新增收藏",frPh:"路线，例如 NX1、70、INN",save:"⭐ 保存",
+ legend:"🟢 实时 = 按车辆实时位置／延误推算；⚪ 时刻表 = 暂无实时数据，按时刻表时间。每 30 秒自动刷新。",
+ wait:" 车辆待发",late:" 晚{n}分",early:" 早{n}分",ontime:" 准点",arriving:"即将到站",mins:"{m} 分钟",rtLbl:" 实时",sep:"，时刻表 ",schLbl:" 时刻表",
+ train:"🚆 火车",bus:"🚌 巴士",ferry:"⛴️ 渡轮",school:"🚌 校车",loadingRoute:"正在加载路线 {r} 数据…",routeInfo:"共 {n} 个方向",noTrips:"路线 {r} 暂时没有任何班次数据",loadFail:"加载失败：{e}",
+ enterRoute:"请输入路线号码，例如 NX1、70、OUT、E-W",querying:"查询中…",notFound:"找不到路线「{q}」，请检查路线号码",didYouMean:"　您是不是要找：",examples:"（例如：NX1、70、OUT、INN、E-W 火车）",sameName:"同名路线：",
+ toDir:"往 {d}",noMatchStop:"找不到相符的车站",calculating:"正在计算到站时间…",etaFail:"到站数据加载失败：{e}",addFav:"☆ 收藏",faved:"⭐ 已收藏",noSvc:"暂无班次",dup:"已经收藏了",saved:"已保存 ⭐ {r} · {s}",
+ enterRouteShort:"请输入路线",noTripsShort:"这条路线暂时没有班次数据",queryFail:"查询失败：{e}",pickDirStop:"路线 {r}：请选择方向和车站",noFavs:"还没有收藏。请在上面输入路线添加，或在「路线查询」点击 ☆ 收藏。",del:"🗑 删除",none3h:"未来 3 小时暂无班次",
+ updated:"最后更新（新西兰时间）：{a}　｜　数据时间：{b}",updFail:"刷新失败：{e}（稍后自动重试）"},
+"en":{footSrc:"Data: <a href=\"https://at.govt.nz/about-us/at-data-sources/\" target=\"_blank\" rel=\"noopener\">Auckland Transport</a> open data (GTFS timetables and real-time feeds), used under <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>.",footDisc:"This site is not an official Auckland Transport service and is not affiliated with AT. Arrival times are estimates and may be delayed or inaccurate — check official AT information before you travel.",footSec:"The AT API key is kept on a server-side proxy (Cloudflare Worker) and never appears in this page.",footMade:"Portfolio project · ittonywong.github.io",errRate:"Too many requests — please wait 30 seconds and try again",errNet:"Network error — please check your connection",errConfig:"Site not configured: set PROXY_URL (your Worker URL) in index.html",title:"Auckland Public Transport Real-time Arrivals (any AT route)",h1:"🚌 Auckland Real-time Arrivals",src:"Data source: Auckland Transport Open Data API",lang:"Language",tab1:"Route search",tab2:"My favourites",loading:"Loading…",
+ rtPh:"Enter any AT route, e.g. NX1, 70, OUT, E-W",go:"Search",qPh:"Search stop name / number",allStops:"All stops",refresh:"🔄 Refresh",newFav:"Add a favourite",frPh:"Route, e.g. NX1, 70, INN",save:"⭐ Save",
+ legend:"🟢 Real-time = estimated from the vehicle's live position / delay; ⚪ Scheduled = no real-time data, timetable time shown. Auto-refreshes every 30 s.",
+ wait:" vehicle waiting to depart",late:" {n} min late",early:" {n} min early",ontime:" on time",arriving:"Arriving",mins:"{m} min",rtLbl:" real-time",sep:", scheduled ",schLbl:" scheduled",
+ train:"🚆 Train",bus:"🚌 Bus",ferry:"⛴️ Ferry",school:"🚌 School bus",loadingRoute:"Loading route {r}…",routeInfo:"{n} direction(s)",noTrips:"Route {r} has no trip data at the moment",loadFail:"Failed to load: {e}",
+ enterRoute:"Please enter a route number, e.g. NX1, 70, OUT, E-W",querying:"Searching…",notFound:"Route “{q}” not found — please check the route number",didYouMean:"  Did you mean:",examples:" (examples: NX1, 70, OUT, INN, E-W train)",sameName:"Routes with this number:",
+ toDir:"To {d}",noMatchStop:"No matching stops",calculating:"Calculating arrival times…",etaFail:"Failed to load arrivals: {e}",addFav:"☆ Favourite",faved:"⭐ Saved",noSvc:"No service",dup:"Already in your favourites",saved:"Saved ⭐ {r} · {s}",
+ enterRouteShort:"Please enter a route",noTripsShort:"This route has no trip data at the moment",queryFail:"Search failed: {e}",pickDirStop:"Route {r}: choose a direction and stop",noFavs:"No favourites yet. Enter a route above, or tap ☆ Favourite on the Route search tab.",del:"🗑 Delete",none3h:"No service in the next 3 hours",
+ updated:"Last updated (NZ time): {a}  |  Data time: {b}",updFail:"Update failed: {e} (will retry automatically)"},
+"ja":{footSrc:"データ：<a href=\"https://at.govt.nz/about-us/at-data-sources/\" target=\"_blank\" rel=\"noopener\">Auckland Transport</a> のオープンデータ（GTFS 時刻表・リアルタイム情報）を <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> に基づき利用しています。",footDisc:"本サイトは Auckland Transport の公式サービスではなく、AT とは関係ありません。到着時刻は目安であり、遅れや誤差がある場合があります。ご利用前に AT の公式情報をご確認ください。",footSec:"AT API キーはサーバー側のプロキシ（Cloudflare Worker）にのみ保管され、このページには含まれていません。",footMade:"ポートフォリオ作品 · ittonywong.github.io",errRate:"リクエストが多すぎます。30秒後にもう一度お試しください",errNet:"ネットワークエラーです。接続を確認してください",errConfig:"サイトが未設定です：index.html の PROXY_URL（Worker の URL）を設定してください",title:"オークランド公共交通 リアルタイム到着情報（全AT路線）",h1:"🚌 オークランド公共交通 リアルタイム到着",src:"データ提供：Auckland Transport オープンデータ API",lang:"言語",tab1:"路線検索",tab2:"お気に入り",loading:"読み込み中…",
+ rtPh:"AT路線を入力（例：NX1、70、OUT、E-W）",go:"検索",qPh:"停留所名／番号で検索",allStops:"すべての停留所",refresh:"🔄 再読込",newFav:"お気に入りを追加",frPh:"路線（例：NX1、70、INN）",save:"⭐ 保存",
+ legend:"🟢 リアルタイム＝車両の現在位置・遅れから推定、⚪ 時刻表＝リアルタイム情報がないため時刻表の時刻を表示。30秒ごとに自動で再読込します。",
+ wait:" 発車待ち",late:" {n}分遅れ",early:" {n}分早い",ontime:" 定刻",arriving:"まもなく到着",mins:"{m} 分",rtLbl:" リアルタイム",sep:"、時刻表 ",schLbl:" 時刻表",
+ train:"🚆 電車",bus:"🚌 バス",ferry:"⛴️ フェリー",school:"🚌 スクールバス",loadingRoute:"路線 {r} のデータを読み込み中…",routeInfo:"{n} 方向",noTrips:"路線 {r} には現在運行データがありません",loadFail:"読み込みに失敗しました：{e}",
+ enterRoute:"路線番号を入力してください（例：NX1、70、OUT、E-W）",querying:"検索中…",notFound:"路線「{q}」が見つかりません。路線番号をご確認ください",didYouMean:"　もしかして：",examples:"（例：NX1、70、OUT、INN、E-W 電車）",sameName:"同じ番号の路線：",
+ toDir:"{d} 方面",noMatchStop:"該当する停留所がありません",calculating:"到着時刻を計算中…",etaFail:"到着情報の読み込みに失敗しました：{e}",addFav:"☆ お気に入り",faved:"⭐ 登録済み",noSvc:"運行なし",dup:"すでにお気に入りに登録済みです",saved:"保存しました ⭐ {r} · {s}",
+ enterRouteShort:"路線を入力してください",noTripsShort:"この路線には現在運行データがありません",queryFail:"検索に失敗しました：{e}",pickDirStop:"路線 {r}：方向と停留所を選んでください",noFavs:"お気に入りはまだありません。上で路線を入力するか、「路線検索」で ☆ お気に入り を押してください。",del:"🗑 削除",none3h:"今後3時間は運行なし",
+ updated:"最終更新（NZ時間）：{a}　｜　データ時刻：{b}",updFail:"再読込に失敗しました：{e}（自動で再試行します）"},
+"mi":{footSrc:"Raraunga: ngā raraunga tuwhera a <a href=\"https://at.govt.nz/about-us/at-data-sources/\" target=\"_blank\" rel=\"noopener\">Auckland Transport</a> (ngā wātaka GTFS me ngā raraunga wā tūturu), e whakamahia ana i raro i te <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>.",footDisc:"Ehara tēnei pae i te ratonga ōkawa a Auckland Transport, ā, kāore he hononga ki a AT. He matapae noa ngā wā taenga, ā, tērā pea ka tōmuri, ka hē rānei — tirohia ngā mōhiohio ōkawa a AT i mua i tō haerenga.",footSec:"Ka puritia te kī API a AT ki tētahi takawaenga ā-tūmau (Cloudflare Worker), ā, kāore e kitea i tēnei whārangi.",footMade:"Kaupapa kōpaki mahi · ittonywong.github.io",errRate:"He nui rawa ngā tono — tatari kia 30 hēkona, ka ngana anō",errNet:"Hapa whatunga — tirohia tō hononga",errConfig:"Kāore anō te pae kia whirihorahia: tautuhia te PROXY_URL (te URL o tō Worker) i index.html",title:"Ngā Taenga Waka Tūmatanui o Tāmaki Makaurau i te Wā Tūturu (ngā ara AT katoa)",h1:"🚌 Ngā Taenga i te Wā Tūturu, Tāmaki Makaurau",src:"Mātāpuna raraunga: Auckland Transport Open Data API",lang:"Reo",tab1:"Rapu ara",tab2:"Aku tino pai",loading:"E uta ana…",
+ rtPh:"Tāurua he ara AT, hei tauira NX1, 70, OUT, E-W",go:"Rapua",qPh:"Rapua te ingoa, te nama rānei o te tūnga",allStops:"Ngā tūnga katoa",refresh:"🔄 Whakahou",newFav:"Tāpiri tino pai",frPh:"Ara, hei tauira NX1, 70, INN",save:"⭐ Tiakina",
+ legend:"🟢 Wā tūturu = he mea tatau i te tūnga me te tōmuri o te waka; ⚪ Wātaka = kāore he raraunga wā tūturu, ko te wā o te wātaka e whakaatuhia ana. Ka whakahou aunoa ia 30 hēkona.",
+ wait:" e tatari ana te waka kia wehe",late:" {n} meneti tōmuri",early:" {n} meneti moata",ontime:" i te wā tika",arriving:"Ka tae mai ināianei",mins:"{m} meneti",rtLbl:" wā tūturu",sep:", wātaka ",schLbl:" wātaka",
+ train:"🚆 Tereina",bus:"🚌 Pahi",ferry:"⛴️ Waka kōpiko",school:"🚌 Pahi kura",loadingRoute:"E uta ana i te ara {r}…",routeInfo:"{n} ahunga",noTrips:"Kāore he raraunga haerenga mō te ara {r} i tēnei wā",loadFail:"I rahua te uta: {e}",
+ enterRoute:"Tēnā, tāurua he nama ara, hei tauira NX1, 70, OUT, E-W",querying:"E rapu ana…",notFound:"Kāore i kitea te ara “{q}” — tirohia anō te nama ara",didYouMean:"  Koinei pea tāu e rapu ana:",examples:" (hei tauira: NX1, 70, OUT, INN, tereina E-W)",sameName:"Ngā ara he ōrite te nama:",
+ toDir:"Ki {d}",noMatchStop:"Kāore he tūnga e hāngai ana",calculating:"E tātai ana i ngā wā taenga…",etaFail:"I rahua te uta i ngā taenga: {e}",addFav:"☆ Tino pai",faved:"⭐ Kua tiakina",noSvc:"Kāore he ratonga",dup:"Kei roto kē i aku tino pai",saved:"Kua tiakina ⭐ {r} · {s}",
+ enterRouteShort:"Tēnā, tāurua he ara",noTripsShort:"Kāore he raraunga haerenga mō tēnei ara i tēnei wā",queryFail:"I rahua te rapu: {e}",pickDirStop:"Ara {r}: kōwhiria te ahunga me te tūnga",noFavs:"Kāore anō kia whai tino pai. Tāurua he ara i runga ake, pēhia rānei te ☆ Tino pai i te wāhanga Rapu ara.",del:"🗑 Mukua",none3h:"Kāore he ratonga i ngā hāora e 3 e heke mai nei",
+ updated:"Whakahounga whakamutunga (wā o Aotearoa): {a}  |  Wā raraunga: {b}",updFail:"I rahua te whakahou: {e} (ka ngana anō ā muri ake nei)"},
+"ko":{footSrc:"데이터: <a href=\"https://at.govt.nz/about-us/at-data-sources/\" target=\"_blank\" rel=\"noopener\">Auckland Transport</a> 오픈 데이터(GTFS 시간표 및 실시간 정보), <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> 라이선스에 따라 사용.",footDisc:"이 사이트는 Auckland Transport의 공식 서비스가 아니며 AT와 관련이 없습니다. 도착 시간은 예상치이며 지연되거나 정확하지 않을 수 있습니다. 이동 전에 AT 공식 정보를 확인하세요.",footSec:"AT API 키는 서버 측 프록시(Cloudflare Worker)에만 보관되며 이 페이지에는 포함되지 않습니다.",footMade:"포트폴리오 프로젝트 · ittonywong.github.io",errRate:"요청이 너무 많습니다. 30초 후 다시 시도하세요",errNet:"네트워크 오류입니다. 연결을 확인하세요",errConfig:"사이트가 설정되지 않았습니다: index.html의 PROXY_URL(Worker 주소)을 설정하세요",title:"오클랜드 대중교통 실시간 도착 정보 (모든 AT 노선)",h1:"🚌 오클랜드 대중교통 실시간 도착",src:"데이터 출처: Auckland Transport 오픈 데이터 API",lang:"언어",tab1:"노선 검색",tab2:"즐겨찾기",loading:"불러오는 중…",
+ rtPh:"AT 노선 입력 (예: NX1, 70, OUT, E-W)",go:"검색",qPh:"정류장 이름 / 번호 검색",allStops:"모든 정류장",refresh:"🔄 새로고침",newFav:"즐겨찾기 추가",frPh:"노선 (예: NX1, 70, INN)",save:"⭐ 저장",
+ legend:"🟢 실시간 = 차량의 실시간 위치/지연을 바탕으로 추정, ⚪ 시간표 = 실시간 정보가 없어 시간표 시각 표시. 30초마다 자동 새로고침.",
+ wait:" 출발 대기 중",late:" {n}분 지연",early:" {n}분 조기",ontime:" 정시",arriving:"곧 도착",mins:"{m}분",rtLbl:" 실시간",sep:", 시간표 ",schLbl:" 시간표",
+ train:"🚆 기차",bus:"🚌 버스",ferry:"⛴️ 페리",school:"🚌 스쿨버스",loadingRoute:"{r} 노선 정보를 불러오는 중…",routeInfo:"{n}개 방향",noTrips:"{r} 노선은 현재 운행 정보가 없습니다",loadFail:"불러오기 실패: {e}",
+ enterRoute:"노선 번호를 입력하세요 (예: NX1, 70, OUT, E-W)",querying:"검색 중…",notFound:"“{q}” 노선을 찾을 수 없습니다. 노선 번호를 확인하세요",didYouMean:"  혹시 이 노선인가요:",examples:" (예: NX1, 70, OUT, INN, E-W 기차)",sameName:"같은 번호의 노선:",
+ toDir:"{d} 방면",noMatchStop:"일치하는 정류장이 없습니다",calculating:"도착 시간 계산 중…",etaFail:"도착 정보 불러오기 실패: {e}",addFav:"☆ 즐겨찾기",faved:"⭐ 저장됨",noSvc:"운행 없음",dup:"이미 즐겨찾기에 있습니다",saved:"저장됨 ⭐ {r} · {s}",
+ enterRouteShort:"노선을 입력하세요",noTripsShort:"이 노선은 현재 운행 정보가 없습니다",queryFail:"검색 실패: {e}",pickDirStop:"{r} 노선: 방향과 정류장을 선택하세요",noFavs:"즐겨찾기가 없습니다. 위에 노선을 입력하거나 ‘노선 검색’에서 ☆ 즐겨찾기를 누르세요.",del:"🗑 삭제",none3h:"앞으로 3시간 동안 운행 없음",
+ updated:"마지막 업데이트 (뉴질랜드 시간): {a}  |  데이터 시각: {b}",updFail:"업데이트 실패: {e} (잠시 후 자동 재시도)"}};
+let LANG=localStorage.getItem("atLang");if(!I18N[LANG])LANG="zh-Hant";
+const T=(k,v={})=>(I18N[LANG][k]??I18N["zh-Hant"][k]).replace(/\{(\w+)\}/g,(_,x)=>v[x]??"");
+const M={};function setM(id,fn){M[id]=fn;$(id).innerHTML=fn();} // 動態訊息：切換語言時重新生成
+
+async function get(p){if(!CONFIGURED)throw new Error(T("errConfig"));let r;try{r=await fetch(API+p,{credentials:"omit",cache:"default"})}catch(e){throw new Error(T("errNet"))}
+ if(r.status===429)throw new Error(T("errRate"));if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}
+// NZ time helpers
+const fmt=new Intl.DateTimeFormat("en-NZ",{timeZone:"Pacific/Auckland",hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+function nzParts(ms){const o={};for(const p of fmt.formatToParts(new Date(ms)))o[p.type]=p.value;return o;}
+function nzStr(sec){const o=nzParts(sec*1000);return `${o.year}-${o.month}-${o.day} ${o.hour}:${o.minute}:${o.second}`;}
+function hm(sec){const o=nzParts(sec*1000);return o.hour+":"+o.minute;}
+function base(d){const y=+d.slice(0,4),m=+d.slice(4,6),dd=+d.slice(6,8);const noon=Date.UTC(y,m-1,dd,12);const o=nzParts(noon);
+ const off=Date.UTC(+o.year,+o.month-1,+o.day,+o.hour,+o.minute)-noon;return (noon-off)/1000-43200;}
+function ymd(ms){const o=nzParts(ms);return o.year+o.month+o.day;}
+// realtime feed
+let feed=null,feedTs=0,fetchedAt=0;
+async function loadFeed(){const j=await get("realtime/legacy/tripupdates");feed=j.response.entity.filter(e=>e.trip_update&&!e.is_deleted).map(e=>e.trip_update);feedTs=j.response.header.timestamp;fetchedAt=Date.now()/1000;}
+// generic ETA: st=[[seq,stop_id,sec]], tu realtime or null（同一站出現多次，例如環線，取第一個未過嘅）
+function eta(st,date,tu,stopId,now){for(const t of st){if(t[1]!==stopId)continue;const r=eta1(st,t,date,tu,now);if(r)return r;}return null;}
+function eta1(st,t,date,tu,now){const sched=base(date)+t[2];
+ if(!tu)return sched>=now-60?{t:sched,rt:false,sched}:null;
+ const u=tu.stop_time_update||{};const ev=u.arrival||u.departure||{};const delay=ev.delay??tu.delay??0;
+ const useq=u.stop_sequence??0;let e;const first=Math.min(...st.map(x=>x[0]));
+ if(useq<=first&&delay<0)return sched>=now-60?{t:sched,rt:true,delay:0,sched,wait:true}:null; // 未開出：唔會早過時間表開
+ if(t[0]<useq)return null;
+ if(t[0]===useq&&ev.time)e=ev.time;else e=sched+delay;
+ if(e<now-60)return null;return {t:e,rt:true,delay,sched};}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function chip(x,now){const m=Math.max(0,Math.round((x.t-now)/60));const d=x.wait?T("wait"):x.rt?(x.delay>60?T("late",{n:Math.round(x.delay/60)}):x.delay<-60?T("early",{n:Math.round(-x.delay/60)}):T("ontime")):"";
+ return `<span class="eta ${x.rt?"rt":"sch"}">${x.rt?"🟢":"⚪"} ${m<1?T("arriving"):T("mins",{m})} (${hm(x.t)})<small>${x.rt?T("rtLbl")+d+T("sep")+hm(x.sched):T("schLbl")}</small></span>`;}
+// ---- 路線解析（任何 AT 路線）----
+const TYPE={2:"train",3:"bus",4:"ferry",712:"school"};
+let ROUTES=null;
+async function allRoutes(){if(ROUTES)return ROUTES;const c=sessionStorage.getItem("routes:v1");if(c)return ROUTES=JSON.parse(c);
+ const j=await get("gtfs/v3/routes");ROUTES=j.data.map(d=>({id:d.id,short:d.attributes.route_short_name||"",long:d.attributes.route_long_name||"",type:d.attributes.route_type,agency:d.attributes.agency_id}));
+ try{sessionStorage.setItem("routes:v1",JSON.stringify(ROUTES))}catch(e){}return ROUTES;}
+const norm=s=>String(s||"").trim().toUpperCase().replace(/\s+/g,"");
+async function resolveRoute(input){const q=norm(input);const R=await allRoutes();
+ let m=R.filter(r=>norm(r.short)===q);
+ if(!m.length)m=R.filter(r=>norm(r.id)===q||norm(r.id).startsWith(q+"-")||norm(r.long)===q);
+ m.sort((a,b)=>(a.type===712)-(b.type===712)||a.id.localeCompare(b.id));
+ const sugg=m.length?[]:R.filter(r=>q&&(norm(r.short).includes(q)||norm(r.long).includes(q))).sort((a,b)=>(a.type===712)-(b.type===712)||a.short.length-b.short.length).slice(0,10);
+ return {m,sugg};}
+const rLabel=r=>`${TYPE[r.type]?T(TYPE[r.type]):"🚍"} ${esc(r.short)}${r.long&&r.long!==r.short?" "+esc(r.long):""}`;
+const dirName=hs=>{const p=String(hs).split(" To ");return p.length>1?p.slice(1).join(" To "):hs;};
+const LCACHE={};
+async function buildRoute(route){if(LCACHE[route.id])return LCACHE[route.id];const ck="rt:v3:"+route.id,c=sessionStorage.getItem(ck);if(c)return LCACHE[route.id]=JSON.parse(c);
+ let L;
+ {const tj=await get(`gtfs/v3/routes/${encodeURIComponent(route.id)}/trips`);if(!tj.data.length)throw new Error("NOTRIPS");
+  const dirs={},tripDir={};for(const t of tj.data){const a=t.attributes;tripDir[a.trip_id]=String(a.direction_id);(dirs[a.direction_id]??={hs:{},shapes:{}});dirs[a.direction_id].hs[a.trip_headsign]=(dirs[a.direction_id].hs[a.trip_headsign]||0)+1;
+   const sh=dirs[a.direction_id].shapes;sh[a.shape_id]??={tid:a.trip_id,n:0};sh[a.shape_id].n++;}
+  L={route,tripDir,dirs:{}};
+  for(const [d,v] of Object.entries(dirs)){const order=[],names={},firsts=new Set();
+   const shapes=Object.values(v.shapes).sort((a,b)=>b.n-a.n).slice(0,4);
+   const ids={};// 同一個站號可能有唔同版本嘅 stop_id（GTFS 版本更新），以站號合併
+   for(const sh of shapes){const s=await get(`gtfs/v3/trips/${encodeURIComponent(sh.tid)}/stops`);let prev=-1;if(s.data[0])firsts.add(s.data[0].id);
+    for(const x of s.data){const key=x.attributes.stop_code||x.id;names[key]??=Object.assign({id:x.id},x.attributes);(ids[key]??=new Set()).add(x.id);
+     let i=order.indexOf(key);if(i<0){order.splice(prev+1,0,key);i=prev+1;}prev=i;}}
+   L.dirs[d]={hs:Object.entries(v.hs).sort((a,b)=>b[1]-a[1])[0][0],stops:order.map(k=>[names[k].id,names[k].stop_code,names[k].stop_name,[...ids[k]]]),firsts:[...firsts]};}}
+ try{sessionStorage.setItem(ck,JSON.stringify(L))}catch(e){}return LCACHE[route.id]=L;}
+// ---- 任何路線嘅實時到站（全線每個站）----
+const tripCache={};
+async function tripST(id){if(tripCache[id])return tripCache[id];const c=sessionStorage.getItem("st:"+id);if(c)return tripCache[id]=JSON.parse(c);
+ const j=await get(`gtfs/v3/trips/${encodeURIComponent(id)}/stoptimes`);const v=j.data.map(x=>[x.attributes.stop_sequence,x.attributes.stop_id,x.attributes.arrival_time_seconds]);
+ try{sessionStorage.setItem("st:"+id,JSON.stringify(v))}catch(e){}return tripCache[id]=v;}
+async function pool(jobs,n){let i=0;await Promise.all(Array.from({length:Math.min(n,jobs.length)},async()=>{while(i<jobs.length)await jobs[i++]();}));}
+const dirTripCache={};
+async function dirTrips(L,d,now){const k=L.route.id+"|"+d,c=dirTripCache[k];if(c&&now-c.at<300)return c.v;
+ const o=nzParts(now*1000),date=`${o.year}-${o.month}-${o.day}`,h=+o.hour,from=Math.max(0,h-3);const m=new Map();
+ let okN=0,lastErr=null;
+ for(const sid of L.dirs[d].firsts){let j;try{j=await get(`gtfs/v3/stops/${encodeURIComponent(sid)}/stoptrips?filter[date]=${date}&filter[start_hour]=${from}&filter[hour_range]=7`);okN++;}catch(e){lastErr=e;continue;} // 舊版本 stop_id 會 404，略過
+  for(const x of j.data){const a=x.attributes;if(a.route_id!==L.route.id||String(a.direction_id)!==d)continue;const dd=a.service_date.replace(/-/g,"");
+   const [hh,mm,ss]=a.departure_time.split(":").map(Number),dep=base(dd)+hh*3600+mm*60+ss;if(dep<now-3*3600||dep>now+3*3600)continue;m.set(a.trip_id+"|"+dd,{trip:a.trip_id,date:dd});}}
+ if(!okN&&lastErr)throw lastErr;const v=[...m.values()];dirTripCache[k]={at:now,v};return v;}
+async function routeEtas(L,d,now){const res={};
+ const trips=[],seen=new Set();
+ for(const tu of feed){const tr=tu.trip;if(tr.route_id!==L.route.id)continue;const td=tr.direction_id!=null?String(tr.direction_id):L.tripDir[tr.trip_id];if(td!==d)continue;
+  seen.add(tr.trip_id+"|"+tr.start_date);trips.push({id:tr.trip_id,date:tr.start_date,tu});}
+ for(const s of await dirTrips(L,d,now))if(!seen.has(s.trip+"|"+s.date))trips.push({id:s.trip,date:s.date,tu:null});
+ await pool(trips.map(t=>async()=>{try{t.st=await tripST(t.id)}catch(e){t.st=null}}),6);
+ for(const s of L.dirs[d].stops){const out=[],sids=s[3]||[s[0]];for(const t of trips){if(!t.st)continue;let x=null;for(const sid of sids){x=eta(t.st,t.date,t.tu,sid,now);if(x)break;}if(x&&(x.rt||x.t<now+3*3600))out.push(x);}
+  out.sort((a,b)=>a.t-b.t);res[s[0]]=out.slice(0,3);}
+ return res;}
+// ---- 主頁：揀路線 → 方向 → 車站 ----
+let CUR=null,gen=0;
+async function pickRoute(r){CUR=null;gen++;const my=gen;setM("rmsg",()=>esc(T("loadingRoute",{r:r.short})));$("list").innerHTML="";$("dir").innerHTML="";$("sel").innerHTML="";
+ try{const L=await buildRoute(r);if(my!==gen)return;CUR=L;localStorage.setItem("atLastRoute",r.id);
+  setM("rmsg",()=>`<span class="rname">${rLabel(r)}</span>　${T("routeInfo",{n:Object.keys(L.dirs).length})}`);
+  fillDir();$("q").value="";fillSel();await renderNX();}
+ catch(e){if(my!==gen)return;setM("rmsg",()=>`<span class="err">${e.message==="NOTRIPS"?esc(T("noTrips",{r:r.short})):esc(T("loadFail",{e:e.message}))}</span>`);}}
+function fillDir(){if(!CUR)return;const v=$("dir").value;$("dir").innerHTML=Object.entries(CUR.dirs).map(([k,x])=>`<option value="${k}">${esc(T("toDir",{d:dirName(x.hs)}))}</option>`).join("");if(v&&CUR.dirs[v])$("dir").value=v;}
+async function goRoute(input,prefId){const q=String(input||"").trim();setM("rpick",()=>"");
+ if(!q){setM("rmsg",()=>`<span class="err">${T("enterRoute")}</span>`);return;}
+ setM("rmsg",()=>T("querying"));
+ try{const {m,sugg}=await resolveRoute(q);
+  if(!m.length){CUR=null;gen++;$("list").innerHTML="";$("dir").innerHTML="";$("sel").innerHTML="";
+   setM("rmsg",()=>`<span class="err">${esc(T("notFound",{q}))}</span>${sugg.length?T("didYouMean"):T("examples")}`);
+   setM("rpick",()=>sugg.map(r=>`<button data-rid="${esc(r.id)}">${rLabel(r)}</button>`).join(""));return;}
+  const r=m.find(x=>x.id===prefId)||m[0];
+  if(m.length>1)setM("rpick",()=>`<span data-same>${T("sameName")}</span>`+m.map(x=>`<button data-rid="${esc(x.id)}">${rLabel(x)} <small>(${esc(x.id)})</small></button>`).join(""));
+  await pickRoute(r);}
+ catch(e){setM("rmsg",()=>`<span class="err">${esc(T("queryFail",{e:e.message}))}</span>`);}}
+$("rpick").onclick=async ev=>{const b=ev.target.closest("button");if(!b)return;const r=(await allRoutes()).find(x=>x.id===b.dataset.rid);if(r){$("rt").value=r.short;if(!$("rpick").querySelector("[data-same]"))setM("rpick",()=>"");await pickRoute(r);}};
+function fillSel(){if(!CUR)return;const st=CUR.dirs[$("dir").value].stops,q=$("q").value.trim().toLowerCase();
+ const sv=$("sel").value;$("sel").innerHTML=`<option value="">${T("allStops")}</option>`+st.filter(s=>!q||s[2].toLowerCase().includes(q)||String(s[1]).includes(q)).map(s=>`<option value="${s[0]}">${esc(s[2])} (${esc(s[1])})</option>`).join("");if(sv&&[...$("sel").options].some(o=>o.value===sv))$("sel").value=sv;}
+async function renderNX(){if(!feed||!CUR)return;const L=CUR,my=gen,now=Date.now()/1000,dir=$("dir").value,q=$("q").value.trim().toLowerCase(),only=$("sel").value;
+ const st=L.dirs[dir].stops.filter(s=>(!only||s[0]===only)&&(!q||s[2].toLowerCase().includes(q)||String(s[1]).includes(q)));
+ if(!st.length){$("list").innerHTML=`<div class="card meta">${T("noMatchStop")}</div>`;return;}
+ if(!$("list").children.length||$("list").dataset.k!==L.route.id+dir)$("list").innerHTML=`<div class="card meta loading">${T("calculating")}</div>`;
+ let E;try{E=await routeEtas(L,dir,now)}catch(e){if(my===gen)$("list").innerHTML=`<div class="card err">${esc(T("etaFail",{e:e.message}))}</div>`;return;}
+ if(my!==gen||L!==CUR||dir!==$("dir").value)return;
+ const st2=L.dirs[dir].stops.filter(s=>(!$("sel").value||s[0]===$("sel").value)&&(!$("q").value.trim()||s[2].toLowerCase().includes($("q").value.trim().toLowerCase())||String(s[1]).includes($("q").value.trim().toLowerCase())));
+ $("list").dataset.k=L.route.id+dir;
+ $("list").innerHTML=st2.length?st2.map(s=>{const e=E[s[0]]||[];return `<div class="card" data-stop="${s[0]}"><button class="addf" data-s="${s[0]}">${T("addFav")}</button><div class="stop" data-raw>${esc(s[2])} <span class="code">#${esc(s[1])}</span></div>${e.length?e.map(x=>chip(x,now)).join(""):`<span class="meta">${T("noSvc")}</span>`}</div>`}).join(""):`<div class="card meta">${T("noMatchStop")}</div>`;}
+// favourites（可以收藏唔同路線）
+const LS="atFavs";
+const favs=()=>JSON.parse(localStorage.getItem(LS)||"[]"),saveFavs=f=>localStorage.setItem(LS,JSON.stringify(f));
+function favAdd(L,d,s,msgEl){const f=favs();
+ if(f.some(x=>x.route_id===L.route.id&&x.dir===d&&x.stop===s[0])){setM(msgEl.id,()=>esc(T("dup")));return false;}
+ f.push({route_id:L.route.id,short:L.route.short,dir:d,hs:L.dirs[d].hs,stop:s[0],code:s[1],name:s[2],ids:s[3]||[s[0]]});saveFavs(f);setM(msgEl.id,()=>esc(T("saved",{r:L.route.short,s:s[2]})));renderFavs();return true;}
+$("list").onclick=ev=>{const b=ev.target.closest(".addf");if(!b||!CUR)return;const d=$("dir").value,s=CUR.dirs[d].stops.find(x=>x[0]===b.dataset.s);if(s){favAdd(CUR,d,s,$("rmsg"));b.textContent=T("faved");}};
+let lookup=null;
+async function findRoute(prefId){const r=$("fr").value.trim();setM("fmsg",()=>T("querying"));["fd","fs","fadd"].forEach(i=>$(i).classList.add("hide"));setM("fpick",()=>"");
+ if(!r){setM("fmsg",()=>T("enterRouteShort"));return;}
+ try{const {m,sugg}=await resolveRoute(r);
+  if(!m.length){setM("fmsg",()=>`<span class="err">${esc(T("notFound",{q:r}))}</span>${sugg.length?T("didYouMean"):""}`);setM("fpick",()=>sugg.map(x=>`<button data-rid="${esc(x.id)}">${rLabel(x)}</button>`).join(""));return;}
+  const route=m.find(x=>x.id===prefId)||m[0];if(m.length>1)setM("fpick",()=>`<span data-same>${T("sameName")}</span>`+m.map(x=>`<button data-rid="${esc(x.id)}">${rLabel(x)} <small>(${esc(x.id)})</small></button>`).join(""));
+  lookup=await buildRoute(route);
+  $("fd").innerHTML=Object.entries(lookup.dirs).map(([d,v])=>`<option value="${d}">${esc(v.hs)}</option>`).join("");fillFS();
+  ["fd","fs","fadd"].forEach(i=>$(i).classList.remove("hide"));setM("fmsg",()=>esc(T("pickDirStop",{r:route.short})));
+ }catch(e){setM("fmsg",()=>`<span class="err">${e.message==="NOTRIPS"?T("noTripsShort"):esc(T("queryFail",{e:e.message}))}</span>`);}}
+$("fpick").onclick=async ev=>{const b=ev.target.closest("button");if(!b)return;const r=(await allRoutes()).find(x=>x.id===b.dataset.rid);if(r){$("fr").value=r.short;findRoute(r.id);}};
+function fillFS(){$("fs").innerHTML=lookup.dirs[$("fd").value].stops.map(s=>`<option value="${s[0]}">${esc(s[2])} (${esc(s[1])})</option>`).join("");}
+function addFav(){const d=$("fd").value,s=lookup.dirs[d].stops.find(x=>x[0]===$("fs").value);if(s)favAdd(lookup,d,s,$("fmsg"));}
+// 收藏：用 GTFS v3 stoptrips 攞該站時間表（每個收藏 5 分鐘快取一次）
+const schCache={};
+async function stopSched(x,now){const k=x.route_id+x.dir+x.stop;const c=schCache[k];if(c&&now-c.at<300)return c.v;
+ const o=nzParts(now*1000),date=`${o.year}-${o.month}-${o.day}`,h=Math.max(0,+o.hour-1);let data=[],okN=0,lastErr=null;
+ for(const sid of (x.ids||[x.stop])){try{const j=await get(`gtfs/v3/stops/${encodeURIComponent(sid)}/stoptrips?filter[date]=${date}&filter[start_hour]=${h}&filter[hour_range]=4`);data=data.concat(j.data);okN++;}catch(e){lastErr=e}}
+ if(!okN&&lastErr)throw lastErr;
+ const v=data.map(d=>d.attributes).filter(a=>a.route_id===x.route_id&&String(a.direction_id)===x.dir)
+  .map(a=>{const [hh,mm,ss]=a.departure_time.split(":").map(Number);return {trip:a.trip_id,date:a.service_date.replace(/-/g,""),seq:a.stop_sequence,sec:hh*3600+mm*60+ss,sid:a.stop_id};});
+ schCache[k]={at:now,v};return v;}
+async function renderFavs(){const f=favs();if(!f.length){$("favs").innerHTML=`<div class="card meta">${T("noFavs")}</div>`;return;}if(!feed)return;
+ const now=Date.now()/1000;const html=[];
+ for(const [i,x] of f.entries()){let e=[],err="";
+  try{{
+    const sch=await stopSched(x,now),seen=new Set();
+    for(const tu of feed){const tr=tu.trip;if(tr.route_id!==x.route_id||String(tr.direction_id)!==x.dir)continue;seen.add(tr.trip_id+"|"+tr.start_date);
+     const s=sch.find(y=>y.trip===tr.trip_id&&y.date===tr.start_date);const st=s?[[s.seq,s.sid,s.sec]]:await tripST(tr.trip_id);let r=null;for(const sid of (x.ids||[x.stop])){r=eta(st,tr.start_date,tu,sid,now);if(r)break;}if(r)e.push(r);}
+    for(const s of sch){if(seen.has(s.trip+"|"+s.date))continue;const r=eta([[s.seq,s.sid,s.sec]],s.date,null,s.sid,now);if(r)e.push(r);}}
+  }catch(er){err=er.message}
+  e.sort((a,b)=>a.t-b.t);
+  html.push(`<div class="card" data-fav="${i}"><button class="del" data-i="${i}">${T("del")}</button><div class="stop" data-raw>${esc(x.short)} · ${esc(x.name)} <span class="code">#${esc(x.code)}</span></div><div class="meta" data-raw>${esc(x.hs)}</div>${err?`<span class="err">${esc(err)}</span>`:e.length?e.slice(0,3).map(y=>chip(y,now)).join(""):`<span class="meta">${T("none3h")}</span>`}</div>`);}
+ $("favs").innerHTML=html.join("");}
+$("favs").onclick=ev=>{const i=ev.target.dataset.i;if(i!==undefined){const f=favs();f.splice(+i,1);saveFavs(f);renderFavs();}};
+// refresh loop
+let busy=false;
+async function refresh(){if(busy)return;busy=true;try{try{await loadFeed();setM("upd",()=>esc(T("updated",{a:nzStr(fetchedAt),b:nzStr(feedTs)})));$("upd").classList.remove("loading");}
+ catch(e){setM("upd",()=>`<span class="err">${esc(T("updFail",{e:e.message}))}</span>`);$("upd").classList.remove("loading");}
+ await renderNX();await renderFavs();}finally{busy=false;}}
+$("t1").onclick=()=>{$("t1").className="on";$("t2").className="";$("p1").classList.remove("hide");$("p2").classList.add("hide");};
+$("t2").onclick=()=>{$("t2").className="on";$("t1").className="";$("p2").classList.remove("hide");$("p1").classList.add("hide");renderFavs();};
+$("dir").onchange=()=>{fillSel();renderNX()};$("q").oninput=()=>{fillSel();renderNX()};$("sel").onchange=renderNX;$("rf").onclick=refresh;
+$("rgo").onclick=()=>goRoute($("rt").value);$("rt").onkeydown=e=>{if(e.key==="Enter")goRoute($("rt").value)};
+$("fgo").onclick=()=>findRoute();$("fr").onkeydown=e=>{if(e.key==="Enter")findRoute()};$("fd").onchange=fillFS;$("fadd").onclick=addFav;
+$("lang").innerHTML=LANGS.map(([k,v])=>`<option value="${k}" lang="${k}">${v}</option>`).join("");
+function applyLang(){document.documentElement.lang=LANG;$("lang").value=LANG;document.title=T("title");
+ document.querySelectorAll("[data-tr]").forEach(e=>e.textContent=T(e.dataset.tr));document.querySelectorAll("[data-trh]").forEach(e=>e.innerHTML=T(e.dataset.trh));
+ if(!CONFIGURED){$("cfg").textContent=T("errConfig");$("cfg").classList.remove("hide");}document.querySelectorAll("[data-ip]").forEach(e=>e.placeholder=T(e.dataset.ip));
+ for(const [id,fn] of Object.entries(M))$(id).innerHTML=fn();
+ fillDir();fillSel();if(CUR&&feed)renderNX();if(!$("p2").classList.contains("hide"))renderFavs();else if(feed&&favs().length)renderFavs();}
+$("lang").onchange=()=>{LANG=$("lang").value;localStorage.setItem("atLang",LANG);applyLang();};applyLang();
+(async()=>{const qp=new URLSearchParams(location.search).get("route"),last=localStorage.getItem("atLastRoute");let init=qp||"NX1",pref=null;
+ if(!qp&&last){init=last.replace(/-\d+$/,"");pref=last;}
+ $("rt").value=init;const f=refresh();await goRoute(init,pref);await f;setInterval(refresh,30000);})();
+</script></body></html>
